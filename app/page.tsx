@@ -11,14 +11,17 @@ import {Combobox,ComboboxInput,ComboboxContent,ComboboxList,ComboboxItem,Combobo
 import AnatomyScene from './scene';
 import {DEFAULT_VISIBLE,SYSTEMS,EXPLANATIONS,explanation,type Atlas,type Concept,type SceneState,type SystemId,type View} from './anatomy';
 import {MUSCLE_GROUPS,MUSCLE_GROUP_BY_PART,type MuscleGroup} from './muscle-groups';
-import {LanguageProvider,useLanguage} from './i18n';
+import {useLanguage} from './i18n';
+import {LangToggle,AppTabs,type AppTab} from './nav';
 
 type SearchItem = {kind:'group';group:MuscleGroup} | {kind:'concept';concept:Concept};
 
 const initial:SceneState={explode:0,visible:DEFAULT_VISIBLE,selected:[],isolate:false,view:'three-quarter',rotate:false,reset:0};
 
-function Studio(){
- const {lang,setLang,t}=useLanguage();
+export interface StudioProps{onNavigate:(tab:AppTab)=>void;pendingGroupId?:string|null;onConsumedPendingGroup?:()=>void}
+
+export function Studio({onNavigate,pendingGroupId,onConsumedPendingGroup}:StudioProps){
+ const {lang,t}=useLanguage();
  const detailTitle=useRef<HTMLHeadingElement>(null);
  const [atlas,setAtlas]=useState<Atlas|null>(null),[state,setState]=useState(initial),[progress,setProgress]=useState(0),[error,setError]=useState(''),[panel,setPanel]=useState<'layers'|'search'|null>(null),[details,setDetails]=useState(false),[about,setAbout]=useState(false),[query,setQuery]=useState(''),[chosen,setChosen]=useState<Concept|null>(null),[chosenGroup,setChosenGroup]=useState<MuscleGroup|null>(null);
  useEffect(()=>{const abort=new AbortController();setProgress(0);setError('');setAtlas(null);setChosen(null);setChosenGroup(null);setDetails(false);setState({...initial,visible:DEFAULT_VISIBLE});fetch('/models/atlas.json',{signal:abort.signal}).then(r=>{if(!r.ok)throw new Error('load-failed');return r.json();}).then(data=>setAtlas(data as Atlas)).catch(e=>{if(e.name!=='AbortError')setError(t.loadError);});return()=>abort.abort();},[]);
@@ -44,6 +47,13 @@ function Studio(){
  const choose=(c:Concept)=>{setChosenGroup(null);setChosen(c);setState(s=>({...s,selected:c.elements,isolate:false,rotate:false}));setDetails(true);setPanel(null);};
  useEffect(()=>{if(!atlas)return;return registerAtlasTools(atlas,c=>flushSync(()=>choose(c)));},[atlas]);
  const selectGroup=(group:MuscleGroup)=>{setChosen(null);setChosenGroup(group);setState(s=>({...s,selected:group.partIds,isolate:false,rotate:false}));setDetails(true);setPanel(null);};
+ useEffect(()=>{
+  if(!pendingGroupId||!atlas)return;
+  const group=MUSCLE_GROUPS.find(g=>g.id===pendingGroupId);
+  if(group)selectGroup(group);
+  onConsumedPendingGroup?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[pendingGroupId,atlas]);
  const choosePartDirect=(id:string)=>{
   const p=parts.get(id);if(!p)return;
   setChosenGroup(null);setChosen({id:p.conceptId,name:p.name,elements:[id]});setState(s=>({...s,selected:[id],isolate:false,rotate:false}));setDetails(true);setPanel(null);
@@ -63,10 +73,8 @@ function Studio(){
   <header className="identity"><div className="eyebrow"><span className="status-dot"/> {t.eyebrow}</div><h1>PT Atlas<Badge variant="outline" className="edition">3D</Badge></h1><div className="identity-meta">{t.identityMeta(atlas?atlas.parts.length.toLocaleString():'2,234')}</div></header>
   <nav className="top-actions" aria-label="Explorer panels">
    <Button variant="ghost" className={panel==='search'?'active':''} onClick={()=>openPanel('search')} aria-label={t.searchNav}><Search size={18}/><span>{t.searchNav}</span><kbd>/</kbd></Button>
-   <div className="lang-toggle" role="group" aria-label={t.langToggleAria}>
-    <Button variant="ghost" aria-pressed={lang==='vi'} className={lang==='vi'?'active':''} onClick={()=>setLang('vi')}>VI</Button>
-    <Button variant="ghost" aria-pressed={lang==='en'} className={lang==='en'?'active':''} onClick={()=>setLang('en')}>EN</Button>
-   </div>
+   <AppTabs tab="atlas" onChange={onNavigate}/>
+   <LangToggle/>
    <Button variant="ghost" className="icon-button" aria-label={t.aboutNav} onClick={()=>{setDetails(false);setPanel(null);setAbout(true);}}><Info size={18}/></Button>
   </nav>
   <section className={`layers-panel glass ${panel==='layers'?'mobile-open':''}`} aria-label={t.systemsHeading}>
@@ -138,8 +146,4 @@ function Studio(){
    </SheetContent>
   </Sheet>
  </main>;
-}
-
-export default function Home(){
- return <LanguageProvider><Studio/></LanguageProvider>;
 }

@@ -88,11 +88,11 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 @media(max-height:600px) and (orientation:landscape){body:has(.detail-sheet) .bottom-dock{left:12px;right:324px;width:auto;transform:none;max-width:none;margin:0}}
 
 /* PT dashboard additions: language toggle, muscle-group search rows, exercise/tip panel. */
-.lang-toggle{display:flex;align-items:center;gap:2px;background:#edf0f2;border-radius:10px;padding:3px;height:42px}
-.lang-toggle button{height:34px;min-width:38px;min-height:34px;padding:0 12px;border-radius:7px;font-size:12px;font-weight:600;letter-spacing:.02em;color:#697582}
-.lang-toggle button.active{background:#263b48;color:#fff;box-shadow:0 2px 4px #18253610}
-@media(max-width:767px){.lang-toggle{height:40px}.lang-toggle button{min-width:34px;height:32px;min-height:32px;padding:0 9px;font-size:11px}}
-@media(max-width:350px){.lang-toggle button{padding:0 7px}}
+.lang-toggle,.app-tabs{display:flex;align-items:center;gap:2px;background:#edf0f2;border-radius:10px;padding:3px;height:42px}
+.lang-toggle button,.app-tabs button{height:34px;min-width:38px;min-height:34px;padding:0 12px;border-radius:7px;font-size:12px;font-weight:600;letter-spacing:.02em;color:#697582;white-space:nowrap}
+.lang-toggle button.active,.app-tabs button.active{background:#263b48;color:#fff;box-shadow:0 2px 4px #18253610}
+@media(max-width:767px){.lang-toggle,.app-tabs{height:40px}.lang-toggle button,.app-tabs button{min-width:34px;height:32px;min-height:32px;padding:0 9px;font-size:11px}}
+@media(max-width:350px){.lang-toggle button,.app-tabs button{padding:0 7px}}
 
 .search-result-name{display:flex;flex-direction:column;gap:2px;line-height:1.35}
 .search-result-sub{font-size:11px;font-weight:400;text-transform:none;color:#8a949e}
@@ -107,3 +107,58 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 .pt-tips li::before{background:#c05245}
 .detail-sheet.is-pt-group .structure-title{text-transform:none}
 @media(max-width:767px){.pt-note{font-size:12px!important}.pt-list{font-size:13px}}
+
+/* Phase 2: Calculators page (normal-flow page, distinct from the fixed-viewport Atlas studio). */
+.calc-page{height:100%;overflow-y:auto;background:var(--background);color:var(--foreground);-webkit-overflow-scrolling:touch}
+.calc-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;background:#ffffffee;backdrop-filter:blur(20px);border-bottom:1px solid #18253612}
+.calc-brand h1{font-size:21px;font-weight:600;letter-spacing:-.5px;margin:2px 0 0}
+.calc-brand .eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;color:#737d89;display:flex;align-items:center;gap:8px}
+.calc-header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.calc-main{max-width:960px;margin:0 auto;padding:32px 28px 64px}
+.calc-intro h2{font-size:30px;font-weight:600;letter-spacing:-.7px;margin:0 0 8px}
+.calc-intro p{color:#68727d;font-size:14px;line-height:1.6;margin:0 0 28px;max-width:640px}
+.calc-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:16px;align-items:start}
+.calc-form{grid-row:1/4}
+.calc-card-wide{grid-column:1/-1}
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:0 2px 5px #24334403,0 16px 48px #24334407}
+.calc-card h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#3c4956;margin:0 0 16px}
+.calc-field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.calc-field:last-of-type{margin-bottom:0}
+.calc-field label{font-size:12px;font-weight:500;color:#5c6773}
+.calc-field-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.calc-input-unit{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:9px;background:#f7f9fa;overflow:hidden;height:44px}
+.calc-input-unit input{flex:1;min-width:0;border:0;background:none;padding:0 10px;font-size:15px;outline:none;color:var(--foreground);-moz-appearance:textfield}
+.calc-input-unit input::-webkit-outer-spin-button,.calc-input-unit input::-webkit-inner-spin-button{margin:0}
+.calc-input-unit span{padding:0 10px;font-size:11px;color:#8a949e;border-left:1px solid var(--border);display:flex;align-items:center;white-space:nowrap}
+.calc-field select{height:44px;width:100%;border:1px solid var(--border);border-radius:9px;background:#f7f9fa;padding:0 12px;font-size:13px;color:var(--foreground);appearance:auto}
+.calc-segmented{display:flex;gap:2px;background:#edf0f2;border-radius:9px;padding:3px}
+.calc-segmented button{flex:1;height:44px;min-height:44px;border:0;border-radius:6px;background:none;font-size:13px;font-weight:500;color:#697582;cursor:pointer}
+.calc-segmented button.active{background:#fff;color:#233644;box-shadow:0 1px 3px #18253612}
+.calc-segmented-3 button{font-size:12px;padding:0 4px}
+.calc-reset{align-self:flex-start;font-size:12px;color:#788694;padding:8px 0;min-height:auto}
+.calc-saved-note{font-size:11px;color:#9aa3ab;margin-top:10px;line-height:1.5}
+.calc-bmi-value{font-size:44px;font-weight:600;letter-spacing:-1.2px;color:#263b48;line-height:1}
+.calc-badge{display:inline-block;margin-top:10px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.calc-badge-underweight{background:#e6f0fa;color:#2b6cb0}
+.calc-badge-normal{background:#e5f5ec;color:#1f7a4d}
+.calc-badge-overweight{background:#fdf3e0;color:#a3763f}
+.calc-badge-obese1{background:#fde9e3;color:#b0492f}
+.calc-badge-obese2{background:#fbdcd4;color:#96331b}
+.calc-note{font-size:12px;color:#8a949e;margin-top:12px;line-height:1.55}
+.calc-stat-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #18253610;font-size:13px;color:#5c6773}
+.calc-stat-row:last-child{border-bottom:0}
+.calc-stat-row strong{font-size:14px;color:#263b48;font-weight:600;text-align:right}
+.calc-stat-highlight{background:#f7f9fa;margin:6px -12px -4px;padding:13px 12px;border-radius:9px;border-bottom:0}
+.calc-stat-highlight strong{font-size:18px}
+.calc-macro-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin-bottom:18px;background:#edf0f2}
+.calc-macro-list{display:flex;flex-direction:column;gap:11px}
+.calc-macro-row{display:flex;align-items:center;gap:9px;font-size:13px;color:#5c6773}
+.calc-macro-row strong{margin-left:auto;color:#263b48;font-weight:600}
+.calc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.calc-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.calc-chip{display:inline-flex;align-items:center;gap:6px;padding:0 16px;min-height:44px;border-radius:22px;border:1px solid var(--border);background:#f7f9fa;font-size:13px;font-weight:500;color:#263b48;cursor:pointer;transition:background .15s}
+.calc-chip:hover{background:#eef1f3}
+.calc-disclaimer{margin-top:24px;font-size:11px;line-height:1.65;color:#9aa3ab;max-width:720px}
+@media(max-width:900px){.calc-grid{grid-template-columns:1fr}.calc-form{grid-row:auto}}
+@media(max-width:640px){.calc-header{padding:12px 16px}.calc-main{padding:22px 16px 48px}.calc-field-row{grid-template-columns:1fr}.calc-intro h2{font-size:25px}.calc-bmi-value{font-size:38px}.calc-header-actions{gap:6px}}
+@media(max-width:380px){.calc-brand h1{font-size:18px}.calc-header{padding:10px 12px}}

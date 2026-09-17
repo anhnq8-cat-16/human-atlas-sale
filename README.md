@@ -1,16 +1,22 @@
 # PT Atlas
 
-An interactive 3D muscle atlas built for personal trainers (PT) to use as a visual teaching aid with clients on the gym floor. It is a fork of [Human Atlas](https://github.com/ashemag/human-atlas) (React, Three.js, shadcn/ui), focused on the muscular system and extended with a curated, bilingual (English/Vietnamese) library of muscle groups: common gym names, function, suggested exercises, and technique/safety notes.
+A bilingual (English/Vietnamese) dashboard for personal trainers (PT): an interactive 3D muscle atlas plus quick health calculators, built as a visual teaching and consultation aid for use with clients on the gym floor. The atlas is a fork of [Human Atlas](https://github.com/ashemag/human-atlas) (React, Three.js, shadcn/ui), focused on the muscular system and extended with a curated library of muscle groups: common gym names, function, suggested exercises, and technique/safety notes.
 
-This is **Phase 1** of a three-phase project (see the project brief). Phase 1 scope: the interactive muscle atlas only. Health calculators (BMI/TDEE) and Inbody-based recommendations are later phases, not included here.
+This covers **Phase 1** (the interactive muscle atlas) and **Phase 2** (BMI/TDEE/macro calculators) of a three-phase project (see the project brief). **Phase 3** (Inbody-based recommendations) is not included yet.
 
-## Explore
+## Atlas tab
 
 - Defaults to the **muscular system**; toggle the **skeletal system** on to point out bone/tendon attachment points.
 - Click a muscle on the 3D model — or search/browse the muscle-group list — to open a panel with its common Vietnamese gym name, English/anatomical name, function, 2–4 suggested exercises, and safety notes.
 - Toggle language with the **VI / EN** switch in the top bar; your choice is remembered.
 - Orbit, zoom, isolate a structure, and "explode" the model into a spaced inventory of every visible piece.
 - Compact controls and large touch targets (44px minimum) for use on a tablet or laptop next to a client.
+
+## Calculators tab
+
+- BMI classified with the **Asian-Pacific (IDI & WPRO)** cutoffs (not the generic WHO scale), BMR/TDEE via the **Mifflin–St Jeor** equation with 5 activity levels, and a goal-based macro split (lose weight / maintain / build muscle) — see `app/calculators.ts`.
+- Inputs auto-save to this device (`localStorage`) so a PT can pick up where they left off — no account needed, nothing is sent to a server.
+- "Priority muscle groups to train" cross-links each suggested group straight into the Atlas tab with its detail panel already open.
 
 ## Muscle group content
 
