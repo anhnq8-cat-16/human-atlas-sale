@@ -17,6 +17,8 @@ This covers **Phase 1** (the interactive muscle atlas) and **Phase 2** (BMI/TDEE
 - BMI classified with the **Asian-Pacific (IDI & WPRO)** cutoffs (not the generic WHO scale), BMR/TDEE via the **Mifflin–St Jeor** equation with 5 activity levels, and a goal-based macro split (lose weight / maintain / build muscle) — see `app/calculators.ts`.
 - Inputs auto-save to this device (`localStorage`) so a PT can pick up where they left off — no account needed, nothing is sent to a server.
 - "Priority muscle groups to train" cross-links each suggested group straight into the Atlas tab with its detail panel already open.
+- **Weight timeline**: an optional target-weight field estimates weeks (and months, once it's 8+ weeks out) to get there from the current calorie target, using the standard ~7700 kcal/kg linear approximation. Clearly flags when the selected goal doesn't create the calorie direction needed (e.g. target weight is lower but the goal is set to "build muscle").
+- Each card carries a small colored icon accent so the page reads at a glance instead of as a wall of gray; the BMI figure itself is tinted to its classification color.
 
 ### InBody & meal-plan advice
 

@@ -51,3 +51,21 @@ export function suggestGroupsForGoal(goal:Goal):string[]{
  if(goal==='gain')return ['chest','quads','glutes','midBack'];
  return ['chest','midBack','quads','obliques'];
 }
+
+// ~7700 kcal per kg of body fat is the standard linear approximation used by
+// most consumer fitness calculators. Real-world results vary with adherence,
+// water fluctuation and metabolic adaptation — this is a starting estimate
+// for a PT conversation, not a guarantee.
+const KCAL_PER_KG=7700;
+export type WeightDirection='lose'|'gain'|'atTarget';
+export interface WeightTimeline{direction:WeightDirection;weightDiffKg:number;dailyDeltaKcal:number;estimatedWeeks:number|null}
+export function calcWeightTimeline(currentWeightKg:number,targetWeightKg:number,tdee:number,targetCalories:number):WeightTimeline{
+ const weightDiffKg=currentWeightKg-targetWeightKg;
+ const dailyDeltaKcal=targetCalories-tdee;
+ if(Math.abs(weightDiffKg)<0.1)return {direction:'atTarget',weightDiffKg:0,dailyDeltaKcal,estimatedWeeks:null};
+ const direction:WeightDirection=weightDiffKg>0?'lose':'gain';
+ const usableDelta=direction==='lose'?-dailyDeltaKcal:dailyDeltaKcal;
+ if(usableDelta<=0)return {direction,weightDiffKg:Math.abs(weightDiffKg),dailyDeltaKcal,estimatedWeeks:null};
+ const totalKcal=Math.abs(weightDiffKg)*KCAL_PER_KG;
+ return {direction,weightDiffKg:Math.abs(weightDiffKg),dailyDeltaKcal,estimatedWeeks:totalKcal/usableDelta/7};
+}

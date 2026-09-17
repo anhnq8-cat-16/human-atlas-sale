@@ -1,12 +1,18 @@
 import {useEffect,useMemo,useState} from 'react';
-import {ArrowUpRight} from 'lucide-react';
+import {ArrowUpRight,User,Activity as ActivityIcon,Gauge,Flame,PieChart,Target,ChefHat,Salad,Dumbbell,CalendarCheck,HeartPulse,type LucideIcon} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {useLanguage} from './i18n';
 import {LangToggle,AppTabs,type AppTab} from './nav';
 import {MUSCLE_GROUPS} from './muscle-groups';
-import {type Sex,type Activity,type Goal,calcBmi,classifyBmiAsian,type BmiClass,calcBmr,calcTdee,calcTargetCalories,calcMacros,suggestGroupsForGoal} from './calculators';
+import {type Sex,type Activity,type Goal,calcBmi,classifyBmiAsian,type BmiClass,calcBmr,calcTdee,calcTargetCalories,calcMacros,suggestGroupsForGoal,calcWeightTimeline} from './calculators';
 import {type InBodyInput,type BodyFatBand,type SmmBand,type VisceralBand,classifyBodyFat,classifySmm,classifyVisceral,selectLifestyleTips,suggestTraining} from './advice';
 import {type DietType,type CookingLevel,type BudgetTier,type PrepTime,type AvoidTag,type MealSlot,generateMenu,MEAL_CALORIE_SHARE} from './meal-plan';
+
+const CARD_COLORS={client:'#4a6fa5',inbody:'#7c5ca8',target:'#2b8f6f',bmi:'#2b6cb0',calories:'#c2703a',macros:'#2f8f6f',personalize:'#3a95a8',mealplan:'#c0574a',crosslink:'#a85b50',training:'#4a5fc1',lifestyle:'#3a8f7a'} as const;
+function CardIcon({icon:Icon,tone}:{icon:LucideIcon;tone:keyof typeof CARD_COLORS}){
+ const color=CARD_COLORS[tone];
+ return <span className="calc-card-icon" style={{background:`${color}1c`,color}}><Icon size={15} strokeWidth={2.25}/></span>;
+}
 
 interface Inputs{sex:Sex;age:number;heightCm:number;weightKg:number;activity:Activity;goal:Goal}
 const DEFAULT_INPUTS:Inputs={sex:'male',age:30,heightCm:170,weightKg:65,activity:'moderate',goal:'maintain'};
@@ -19,6 +25,10 @@ const INBODY_STORAGE_KEY='pt-atlas-calc-inbody';
 interface MealPrefsState{diet:DietType;cookingLevel:CookingLevel;budgetTier:BudgetTier;prepTime:PrepTime;avoid:AvoidTag[];days:7|10}
 const DEFAULT_MEAL_PREFS:MealPrefsState={diet:'omnivore',cookingLevel:'basic',budgetTier:'moderate',prepTime:'min15to30',avoid:[],days:7};
 const MEAL_PREFS_STORAGE_KEY='pt-atlas-calc-mealprefs';
+
+interface TargetWeightState{targetWeightKg:string}
+const DEFAULT_TARGET_WEIGHT:TargetWeightState={targetWeightKg:''};
+const TARGET_WEIGHT_STORAGE_KEY='pt-atlas-calc-target-weight';
 
 const ALL_AVOID_TAGS:AvoidTag[]=['seafood','beef','pork','egg','dairy','nuts','gluten'];
 const SLOT_ORDER:MealSlot[]=['breakfast','lunch','dinner','snack'];
@@ -44,9 +54,11 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
  const [inputs,setInputs]=useState<Inputs>(()=>loadJSON(STORAGE_KEY,DEFAULT_INPUTS));
  const [inbody,setInbody]=useState<InBodyState>(()=>loadJSON(INBODY_STORAGE_KEY,DEFAULT_INBODY));
  const [mealPrefs,setMealPrefs]=useState<MealPrefsState>(()=>loadJSON(MEAL_PREFS_STORAGE_KEY,DEFAULT_MEAL_PREFS));
+ const [targetWeight,setTargetWeight]=useState<TargetWeightState>(()=>loadJSON(TARGET_WEIGHT_STORAGE_KEY,DEFAULT_TARGET_WEIGHT));
  useEffect(()=>{try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(inputs));}catch{/* localStorage unavailable */}},[inputs]);
  useEffect(()=>{try{window.localStorage.setItem(INBODY_STORAGE_KEY,JSON.stringify(inbody));}catch{/* localStorage unavailable */}},[inbody]);
  useEffect(()=>{try{window.localStorage.setItem(MEAL_PREFS_STORAGE_KEY,JSON.stringify(mealPrefs));}catch{/* localStorage unavailable */}},[mealPrefs]);
+ useEffect(()=>{try{window.localStorage.setItem(TARGET_WEIGHT_STORAGE_KEY,JSON.stringify(targetWeight));}catch{/* localStorage unavailable */}},[targetWeight]);
  function setField<K extends keyof Inputs>(key:K,value:Inputs[K]){setInputs(s=>({...s,[key]:value}));}
  function setInbodyField<K extends keyof InBodyState>(key:K,value:InBodyState[K]){setInbody(s=>({...s,[key]:value}));}
  function setMealField<K extends keyof MealPrefsState>(key:K,value:MealPrefsState[K]){setMealPrefs(s=>({...s,[key]:value}));}
@@ -60,6 +72,9 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
  const macros=calcMacros(inputs.weightKg,target,inputs.goal);
  const macroTotalKcal=Math.max(1,macros.proteinKcal+macros.carbsKcal+macros.fatKcal);
  const suggestedGroups=suggestGroupsForGoal(inputs.goal).map(id=>MUSCLE_GROUPS.find(g=>g.id===id)).filter((g):g is NonNullable<typeof g>=>!!g);
+
+ const targetWeightNum=parseOptional(targetWeight.targetWeightKg);
+ const timeline=targetWeightNum!=null?calcWeightTimeline(inputs.weightKg,targetWeightNum,tdee,target):undefined;
 
  const bodyFatNum=parseOptional(inbody.bodyFatPercent);
  const smmNum=parseOptional(inbody.smmKg);
@@ -93,7 +108,7 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
    <section className="calc-section">
     <div className="calc-row calc-row-2">
      <div className="calc-card">
-      <h3>{t.formSectionHeading}</h3>
+      <h3><CardIcon icon={User} tone="client"/>{t.formSectionHeading}</h3>
       <div className="calc-field">
        <label>{t.formSex}</label>
        <div className="calc-segmented">
@@ -138,7 +153,7 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
      </div>
 
      <div className="calc-card">
-      <h3>{t.inbodyHeading}</h3>
+      <h3><CardIcon icon={ActivityIcon} tone="inbody"/>{t.inbodyHeading}</h3>
       <p className="calc-note calc-note-lead">{t.inbodySubtitle}</p>
       <p className="calc-inbody-recommend">{t.inbodyRecommendedNote}</p>
       <div className="calc-field-row calc-field-row-2">
@@ -173,21 +188,21 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
    <section className="calc-section">
     <div className="calc-row calc-row-3">
      <div className="calc-card">
-      <h3>{t.bmiResultHeading}</h3>
-      <div className="calc-bmi-value">{bmi.toFixed(1)}</div>
+      <h3><CardIcon icon={Gauge} tone="bmi"/>{t.bmiResultHeading}</h3>
+      <div className={`calc-bmi-value calc-bmi-value-${bmiClass}`}>{bmi.toFixed(1)}</div>
       <span className={`calc-badge calc-badge-${bmiClass}`}>{bmiLabel[bmiClass]}</span>
       <p className="calc-note">{t.bmiAsianNote}</p>
      </div>
 
      <div className="calc-card">
-      <h3>{t.caloriesHeading}</h3>
+      <h3><CardIcon icon={Flame} tone="calories"/>{t.caloriesHeading}</h3>
       <div className="calc-stat-row"><span>{t.bmrLabel}</span><strong>{Math.round(bmr).toLocaleString()} kcal</strong></div>
       <div className="calc-stat-row"><span>{t.tdeeLabel}</span><strong>{Math.round(tdee).toLocaleString()} kcal</strong></div>
       <div className="calc-stat-row calc-stat-highlight"><span>{t.targetCaloriesLabel(goalLabel[inputs.goal])}</span><strong>{Math.round(target).toLocaleString()} kcal{t.perDay}</strong></div>
      </div>
 
      <div className="calc-card">
-      <h3>{t.macrosHeading}</h3>
+      <h3><CardIcon icon={PieChart} tone="macros"/>{t.macrosHeading}</h3>
       <div className="calc-macro-bar" aria-hidden="true">
        <span style={{width:`${macros.proteinKcal/macroTotalKcal*100}%`,background:'#263b48'}}/>
        <span style={{width:`${macros.carbsKcal/macroTotalKcal*100}%`,background:'#458a85'}}/>
@@ -204,7 +219,29 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
 
    <section className="calc-section">
     <div className="calc-card">
-     <h3>{t.personalizeHeading}</h3>
+     <h3><CardIcon icon={Target} tone="target"/>{t.targetWeightHeading}</h3>
+     <div className="calc-field-row calc-field-row-2">
+      <div className="calc-field">
+       <label htmlFor="calc-target-weight">{t.targetWeightLabel}</label>
+       <div className="calc-input-unit"><input id="calc-target-weight" type="number" inputMode="decimal" min={30} max={250} value={targetWeight.targetWeightKg} onChange={e=>setTargetWeight({targetWeightKg:e.target.value})}/><span>kg</span></div>
+      </div>
+     </div>
+     {targetWeightNum==null?<p className="calc-note">{t.targetWeightPrompt}</p>:!timeline||timeline.direction==='atTarget'?
+      <p className="calc-target-attarget">{t.targetWeightAtGoal}</p>:
+      timeline.estimatedWeeks==null?
+      <p className="calc-target-mismatch">{t.targetWeightMismatch(timeline.direction==='lose'?t.goalLose:t.goalGain)}</p>:
+      <>
+       <div className="calc-stat-row"><span>{timeline.direction==='lose'?t.targetWeightToLose:t.targetWeightToGain}</span><strong>{timeline.weightDiffKg.toFixed(1)} kg</strong></div>
+       <div className="calc-stat-row calc-stat-highlight"><span>{t.targetWeightEta}</span><strong>{timeline.estimatedWeeks>=8?t.targetWeightWeeksMonths(Math.ceil(timeline.estimatedWeeks),Math.round(timeline.estimatedWeeks/4.345*10)/10):t.targetWeightWeeks(Math.ceil(timeline.estimatedWeeks))}</strong></div>
+       <p className="calc-note">{t.targetWeightLinearNote}</p>
+      </>
+     }
+    </div>
+   </section>
+
+   <section className="calc-section">
+    <div className="calc-card">
+     <h3><CardIcon icon={ChefHat} tone="personalize"/>{t.personalizeHeading}</h3>
      <div className="calc-row calc-row-2">
       <div className="calc-field">
        <label>{t.cookingHeading}</label>
@@ -252,7 +289,7 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
 
    <section className="calc-section">
     <div className="calc-card">
-     <h3>{t.mealPlanHeading}</h3>
+     <h3><CardIcon icon={Salad} tone="mealplan"/>{t.mealPlanHeading}</h3>
      <p className="calc-note calc-note-lead">{t.mealPlanFrameworkNote}</p>
      <div className="calc-menu-grid">
       {menu.map(day=><div className="calc-menu-day" key={day.day}>
@@ -269,14 +306,14 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
    <section className="calc-section">
     <div className="calc-row calc-row-2">
      <div className="calc-card">
-      <h3>{t.crossLinkHeading}</h3>
+      <h3><CardIcon icon={Dumbbell} tone="crosslink"/>{t.crossLinkHeading}</h3>
       <p className="calc-note">{t.crossLinkSubtitle}</p>
       <div className="calc-chip-row">
        {suggestedGroups.map(g=><button key={g.id} type="button" className="calc-chip" onClick={()=>onOpenGroupInAtlas(g.id)}>{lang==='vi'?g.nameVi:g.nameEn}<ArrowUpRight size={13}/></button>)}
       </div>
      </div>
      <div className="calc-card">
-      <h3>{t.trainingHeading}</h3>
+      <h3><CardIcon icon={CalendarCheck} tone="training"/>{t.trainingHeading}</h3>
       <div className="calc-stat-row"><span>{t.trainingDaysLabel}</span><strong>{training.daysPerWeek}</strong></div>
       <p className="calc-note calc-training-split">{lang==='vi'?training.splitVi:training.splitEn}</p>
      </div>
@@ -285,7 +322,7 @@ export function CalculatorsPage({onNavigate,onOpenGroupInAtlas}:CalculatorsPageP
 
    <section className="calc-section">
     <div className="calc-card">
-     <h3>{t.lifestyleHeading}</h3>
+     <h3><CardIcon icon={HeartPulse} tone="lifestyle"/>{t.lifestyleHeading}</h3>
      <ul className="pt-list calc-tips-list">
       {tips.map(tip=><li key={tip.id}>{lang==='vi'?tip.textVi:tip.textEn}</li>)}
      </ul>
