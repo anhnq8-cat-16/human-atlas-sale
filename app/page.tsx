@@ -44,11 +44,14 @@ function Studio(){
  const choose=(c:Concept)=>{setChosenGroup(null);setChosen(c);setState(s=>({...s,selected:c.elements,isolate:false,rotate:false}));setDetails(true);setPanel(null);};
  useEffect(()=>{if(!atlas)return;return registerAtlasTools(atlas,c=>flushSync(()=>choose(c)));},[atlas]);
  const selectGroup=(group:MuscleGroup)=>{setChosen(null);setChosenGroup(group);setState(s=>({...s,selected:group.partIds,isolate:false,rotate:false}));setDetails(true);setPanel(null);};
- const choosePart=(id:string)=>{
+ const choosePartDirect=(id:string)=>{
   const p=parts.get(id);if(!p)return;
+  setChosenGroup(null);setChosen({id:p.conceptId,name:p.name,elements:[id]});setState(s=>({...s,selected:[id],isolate:false,rotate:false}));setDetails(true);setPanel(null);
+ };
+ const choosePart=(id:string)=>{
   const group=MUSCLE_GROUP_BY_PART.get(id);
   if(group){selectGroup(group);return;}
-  setChosenGroup(null);setChosen({id:p.conceptId,name:p.name,elements:[id]});setState(s=>({...s,selected:[id],isolate:false,rotate:false}));setDetails(true);setPanel(null);
+  choosePartDirect(id);
  };
  const toggle=(id:SystemId)=>{setDetails(false);setState(s=>({...s,selected:[],isolate:false,visible:s.visible.includes(id)?s.visible.filter(x=>x!==id):[...s.visible,id]}));};
  const reset=()=>{setState(s=>({...initial,visible:DEFAULT_VISIBLE,reset:s.reset+1}));setChosen(null);setChosenGroup(null);setDetails(false);setPanel(null);};
@@ -111,7 +114,7 @@ function Studio(){
       {chosen&&!EXPLANATIONS[chosen.name.toLowerCase()]&&<span className="context-note">{t.contextNote}</span>}
      </>}
      <div className="structure-meta"><span>{t.atlasReference}<strong>{chosenGroup?chosenGroup.anatomicalEn:chosen?.id}</strong></span><span>{t.selectedPieces}<strong>{state.selected.length.toLocaleString()}</strong></span></div>
-     {selectedParts.length>1&&<div className="member-list"><h3>{t.includedStructures}</h3>{selectedParts.slice(0,50).map(p=><Button variant="ghost" key={p.id} onClick={()=>choosePart(p.id)}><span>{p.name}</span><ChevronRight size={14}/></Button>)}{selectedParts.length>50&&<p>{t.moreModeledPieces(selectedParts.length-50)}</p>}</div>}
+     {selectedParts.length>1&&<div className="member-list"><h3>{t.includedStructures}</h3>{selectedParts.slice(0,50).map(p=><Button variant="ghost" key={p.id} onClick={()=>choosePartDirect(p.id)}><span>{p.name}</span><ChevronRight size={14}/></Button>)}{selectedParts.length>50&&<p>{t.moreModeledPieces(selectedParts.length-50)}</p>}</div>}
      <a className="source-link" href="https://lifesciencedb.jp/bp3d/" target="_blank" rel="noreferrer">{t.viewAnatomicalSource} <ArrowUpRight size={14}/></a>
     </div>
     <div className="detail-actions"><Button className={`primary-action ${state.isolate?'active':''}`} disabled={state.selected.length===0} onClick={()=>setState(s=>({...s,isolate:!s.isolate,explode:0}))}><Focus size={18}/>{state.isolate?t.showSurrounding:t.isolateStructure}<ChevronRight size={16}/></Button><Button variant="ghost" className="secondary-action" onClick={clearSelection}>{t.clearSelection}</Button></div>
