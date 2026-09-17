@@ -2,7 +2,7 @@
 
 A bilingual (English/Vietnamese) dashboard for personal trainers (PT): an interactive 3D muscle atlas plus quick health calculators, built as a visual teaching and consultation aid for use with clients on the gym floor. The atlas is a fork of [Human Atlas](https://github.com/ashemag/human-atlas) (React, Three.js, shadcn/ui), focused on the muscular system and extended with a curated library of muscle groups: common gym names, function, suggested exercises, and technique/safety notes.
 
-This covers **Phase 1** (the interactive muscle atlas) and **Phase 2** (BMI/TDEE/macro calculators) of a three-phase project (see the project brief). **Phase 3** (Inbody-based recommendations) is not included yet.
+This covers **Phase 1** (the interactive muscle atlas) and **Phase 2** (BMI/TDEE/macro calculators, extended with a food-group meal-plan and lifestyle/training advice generator per client feedback) of a three-phase project (see the project brief). Full **Phase 3** (persisted, multi-visit Inbody tracking across a client's history) is not included — see "InBody & meal-plan advice" below for the scope boundary that keeps this session-only.
 
 ## Atlas tab
 
@@ -17,6 +17,14 @@ This covers **Phase 1** (the interactive muscle atlas) and **Phase 2** (BMI/TDEE
 - BMI classified with the **Asian-Pacific (IDI & WPRO)** cutoffs (not the generic WHO scale), BMR/TDEE via the **Mifflin–St Jeor** equation with 5 activity levels, and a goal-based macro split (lose weight / maintain / build muscle) — see `app/calculators.ts`.
 - Inputs auto-save to this device (`localStorage`) so a PT can pick up where they left off — no account needed, nothing is sent to a server.
 - "Priority muscle groups to train" cross-links each suggested group straight into the Atlas tab with its detail panel already open.
+
+### InBody & meal-plan advice
+
+- **Optional InBody fields** (body fat %, skeletal muscle mass, total body water, visceral fat level) refine the advice below when filled in; everything also works from BMI + goal alone. Classification bands (`app/advice.ts`) are general PT-conversation reference ranges, not a clinical diagnosis.
+- **Personalization**: cooking ability, diet type + foods to avoid, food budget, and prep time per meal (all optional, default to reasonable middle values) filter a **7 or 10-day food-group framework menu** (`app/meal-plan.ts`) — portion guidance by food group (carb/protein/veg/fat) with a rotating example dish per slot, not a clinical diet plan. Every preference combination is guaranteed a dish for every slot (a universal, allergen-free fallback dish backs each of the 4 meal slots).
+- **Lifestyle & training advice**: goal-aware behavior tips (sleep, hydration, consistency, etc.), sharpened further when InBody data flags something worth a conversation (e.g. elevated visceral fat, low muscle mass), plus a training-frequency/split suggestion.
+- Everything here is **session-only**, saved to this device's `localStorage` alongside the rest of the calculator inputs — there is no multi-visit client history or backend. Whether to add that (local-only per PT vs. a shared backend with login) is the architecture decision the original brief reserves for a full Phase 3 and still needs to be confirmed with the client before building.
+- A prominent disclaimer accompanies this section: PT-consultation aid only, not a substitute for a doctor or registered dietitian, and the "foods to avoid" filter is a convenience, not a verified allergy safety guarantee.
 
 ## Muscle group content
 

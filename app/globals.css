@@ -117,15 +117,18 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 .calc-main{max-width:960px;margin:0 auto;padding:32px 28px 64px}
 .calc-intro h2{font-size:30px;font-weight:600;letter-spacing:-.7px;margin:0 0 8px}
 .calc-intro p{color:#68727d;font-size:14px;line-height:1.6;margin:0 0 28px;max-width:640px}
-.calc-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:16px;align-items:start}
-.calc-form{grid-row:1/4}
-.calc-card-wide{grid-column:1/-1}
+.calc-section{margin-bottom:16px}
+.calc-row{display:grid;gap:16px;align-items:start}
+.calc-row-2{grid-template-columns:1fr 1fr}
+.calc-row-3{grid-template-columns:1fr 1fr 1fr}
 .calc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 24px;box-shadow:0 2px 5px #24334403,0 16px 48px #24334407}
 .calc-card h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#3c4956;margin:0 0 16px}
 .calc-field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
 .calc-field:last-of-type{margin-bottom:0}
 .calc-field label{font-size:12px;font-weight:500;color:#5c6773}
 .calc-field-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.calc-field-row-2{grid-template-columns:1fr 1fr}
+.calc-field-spaced{margin-top:16px}
 .calc-input-unit{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:9px;background:#f7f9fa;overflow:hidden;height:44px}
 .calc-input-unit input{flex:1;min-width:0;border:0;background:none;padding:0 10px;font-size:15px;outline:none;color:var(--foreground);-moz-appearance:textfield}
 .calc-input-unit input::-webkit-outer-spin-button,.calc-input-unit input::-webkit-inner-spin-button{margin:0}
@@ -135,6 +138,9 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 .calc-segmented button{flex:1;height:44px;min-height:44px;border:0;border-radius:6px;background:none;font-size:13px;font-weight:500;color:#697582;cursor:pointer}
 .calc-segmented button.active{background:#fff;color:#233644;box-shadow:0 1px 3px #18253612}
 .calc-segmented-3 button{font-size:12px;padding:0 4px}
+.calc-segmented-vert{flex-direction:column;gap:4px}
+.calc-segmented-vert button{height:auto;min-height:44px;padding:9px 12px;text-align:left;line-height:1.35}
+.calc-segmented-narrow{max-width:280px}
 .calc-reset{align-self:flex-start;font-size:12px;color:#788694;padding:8px 0;min-height:auto}
 .calc-saved-note{font-size:11px;color:#9aa3ab;margin-top:10px;line-height:1.5}
 .calc-bmi-value{font-size:44px;font-weight:600;letter-spacing:-1.2px;color:#263b48;line-height:1}
@@ -144,7 +150,12 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 .calc-badge-overweight{background:#fdf3e0;color:#a3763f}
 .calc-badge-obese1{background:#fde9e3;color:#b0492f}
 .calc-badge-obese2{background:#fbdcd4;color:#96331b}
+.calc-badge-inbody-low{background:#e6f0fa;color:#2b6cb0}
+.calc-badge-inbody-average{background:#e5f5ec;color:#1f7a4d}
+.calc-badge-inbody-high{background:#fde9e3;color:#b0492f}
 .calc-note{font-size:12px;color:#8a949e;margin-top:12px;line-height:1.55}
+.calc-note-lead{margin-top:0;margin-bottom:14px}
+.calc-inbody-recommend{font-size:12px;color:#7a5f2c;background:#f6f1e7;border:1px solid #e3d3ab;border-radius:8px;padding:9px 11px;line-height:1.5;margin:0 0 16px}
 .calc-stat-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #18253610;font-size:13px;color:#5c6773}
 .calc-stat-row:last-child{border-bottom:0}
 .calc-stat-row strong{font-size:14px;color:#263b48;font-weight:600;text-align:right}
@@ -158,7 +169,22 @@ h1 .edition{font-family:inherit;font-weight:500;font-size:10px;letter-spacing:.0
 .calc-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .calc-chip{display:inline-flex;align-items:center;gap:6px;padding:0 16px;min-height:44px;border-radius:22px;border:1px solid var(--border);background:#f7f9fa;font-size:13px;font-weight:500;color:#263b48;cursor:pointer;transition:background .15s}
 .calc-chip:hover{background:#eef1f3}
-.calc-disclaimer{margin-top:24px;font-size:11px;line-height:1.65;color:#9aa3ab;max-width:720px}
-@media(max-width:900px){.calc-grid{grid-template-columns:1fr}.calc-form{grid-row:auto}}
-@media(max-width:640px){.calc-header{padding:12px 16px}.calc-main{padding:22px 16px 48px}.calc-field-row{grid-template-columns:1fr}.calc-intro h2{font-size:25px}.calc-bmi-value{font-size:38px}.calc-header-actions{gap:6px}}
+.calc-chip-toggle{background:#fff}
+.calc-chip-toggle.active{background:#263b48;border-color:#263b48;color:#fff}
+.calc-training-split{margin-top:14px}
+.calc-tips-list{margin-top:4px}
+.calc-menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:4px}
+.calc-menu-day{border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:#fbfcfc}
+.calc-menu-day-label{font-size:12px;font-weight:700;color:#263b48;margin-bottom:10px;letter-spacing:.02em}
+.calc-menu-slot{padding:7px 0;border-top:1px solid #18253610}
+.calc-menu-slot:first-of-type{border-top:0;padding-top:0}
+.calc-menu-slot-label{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#8a949e;margin-bottom:3px}
+.calc-menu-kcal{font-weight:500;text-transform:none;letter-spacing:0;font-size:10px;color:#a3aab1}
+.calc-menu-dish{font-size:13px;color:#3c4956;line-height:1.4}
+.calc-disclaimer-box{margin-top:8px;background:#fdf3e0;border:1px solid #ecd9ad;border-radius:12px;padding:16px 18px;max-width:720px}
+.calc-disclaimer-box strong{display:block;font-size:13px;color:#8a5a1f;margin-bottom:6px}
+.calc-disclaimer-box p{font-size:12px;line-height:1.6;color:#8a6a3a;margin:0}
+.calc-disclaimer{margin-top:16px;font-size:11px;line-height:1.65;color:#9aa3ab;max-width:720px}
+@media(max-width:900px){.calc-row-2,.calc-row-3{grid-template-columns:1fr}}
+@media(max-width:640px){.calc-header{padding:12px 16px}.calc-main{padding:22px 16px 48px}.calc-field-row{grid-template-columns:1fr}.calc-field-row-2{grid-template-columns:1fr}.calc-intro h2{font-size:25px}.calc-bmi-value{font-size:38px}.calc-header-actions{gap:6px}.calc-menu-grid{grid-template-columns:1fr}}
 @media(max-width:380px){.calc-brand h1{font-size:18px}.calc-header{padding:10px 12px}}
